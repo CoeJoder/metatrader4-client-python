@@ -1,6 +1,7 @@
 from time import time, sleep
 from typing import Dict, Any
 from mt4_client_connector import MetaTrader4ClientConnector
+from mt4_errors import MT4Error
 
 
 class MetaTrader4Api:
@@ -43,9 +44,10 @@ class MetaTrader4Api:
         # raise any errors
         resp = self._zmq.latest_response
         error_code = resp.get("error_code")
-        error_message = "\n".join(resp["errors"]) if "errors" in resp else resp.get("error")
-        if error_code is not None or error_message is not None:
-            raise Exception(f"[{error_code}] {error_message}")
+        error_code_description = resp.get("error_code_description")
+        error_message = resp.get("error_message")
+        if not (error_code is None and error_code_description is None and error_message is None):
+            raise MT4Error(error_code, error_code_description, error_message)
 
         # print any warnings to STDOUT
         warning_message = "\n".join(resp["warnings"]) if "warnings" in resp else resp.get("warning")
