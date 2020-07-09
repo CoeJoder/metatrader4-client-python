@@ -10,14 +10,13 @@ class MetaTrader4ClientConnector:
     PUSH/PULL ZeroMQ sockets."""
 
     def __init__(self, host: str = "localhost", protocol: str = "tcp", push_port: int = 28281, pull_port: int = 28282,
-                 socket_poll_timeout: int = 1000, socket_poll_interval: int = 1, verbose: bool = False):
+                 socket_poll_timeout: int = 1000, verbose: bool = False):
         """
         :param host:                    The hostname or IP address of the server running the MetaTrader terminal.
         :param protocol:                The socket protocol.
         :param push_port:               The PUSH port.  Must match the bridge's PULL port.
         :param pull_port:               The PULL port.  Must match the bridge's PUSH port.
         :param socket_poll_timeout:     The socket polling timeout in milliseconds.
-        :param socket_poll_interval:    The socket polling interval in milliseconds.
         :param verbose:                 Whether to print trace messages.
         """
         self.latest_response = None
@@ -25,7 +24,6 @@ class MetaTrader4ClientConnector:
 
         self._is_running = True
         self._poll_timeout = socket_poll_timeout
-        self._sleep_delay = float(socket_poll_interval) * 1000.0
         self._verbose = verbose
 
         # create and configure the sockets
@@ -70,7 +68,6 @@ class MetaTrader4ClientConnector:
     def _poll_for_responses(self):
         """Background task.  Polls the pull-socket for JSON responses sent by MetaTrader."""
         while self._is_running:
-            sleep(self._sleep_delay)
             if self._pull_socket.poll(self._poll_timeout, zmq.POLLIN):
                 try:
                     response = self._pull_socket.recv_json(zmq.DONTWAIT)
