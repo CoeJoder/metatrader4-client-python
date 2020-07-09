@@ -191,3 +191,13 @@ class MT4Error(Exception):
         self.error_code = MT4ErrorCode.parse(error_code)
         self.error_code_description = error_code_description
         self.message = message
+
+    def __str__(self):
+        if self.error_code_description is not None and self.message is not None:
+            return "[MT4 Error {}: {}] {}\n  {}".format(self.error_code.value, self.error_code.name, self.error_code_description, self.message)
+        elif self.error_code_description is not None:
+            return "[MT4 Error {}: {}] {}".format(self.error_code.value, self.error_code.name, self.error_code_description)
+        elif self.message is not None:
+            return "[MT4 Error {}: {}] {}".format(self.error_code.value, self.error_code.name, self.message)
+        else:
+            return "[MT4 Error {}: {}]".format(self.error_code.value, self.error_code.name)
