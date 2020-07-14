@@ -1,13 +1,13 @@
 import zmq
 
-from time import time, sleep
+from time import time
 from typing import Any, Dict
 from time import sleep
 from threading import Thread
-from errors import MT4Error
+from api.errors import MT4Error
 
 
-class MetaTrader4ClientConnector:
+class MT4Client:
     """Client interface for a MetaTrader bridge.  The connection is established using reciprocal
     PUSH/PULL ZeroMQ sockets."""
 
@@ -25,7 +25,7 @@ class MetaTrader4ClientConnector:
         :param verbose:                 Whether to print trace messages.
         """
         # the most recently PULL'd server response
-        self.latest_response = None
+        self._latest_response = None
 
         self._is_running = True
         self._poll_timeout = socket_poll_timeout
@@ -59,7 +59,7 @@ class MetaTrader4ClientConnector:
         # close all sockets immediately and terminate context
         self._context.destroy(0)
 
-    def get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
+    def _get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
         """
         Sends a request object to the server and waits for a response.
 
@@ -68,20 +68,20 @@ class MetaTrader4ClientConnector:
         :param default:         The default return value.
         :return:                The server response or the default value if response is empty.
         """
-        self.latest_response = None
+        self._latest_response = None
         self._send_object(request)
 
         # poll for response
         start = time()
-        while self.latest_response is None:
+        while self._latest_response is None:
             sleep(self._response_poll_delay)
             if (time() - start) > self._response_timeout:
                 break
-        if self.latest_response is None:
+        if self._latest_response is None:
             raise TimeoutError(timeout_message)
 
         # raise any errors
-        resp = self.latest_response
+        resp = self._latest_response
         error_code = resp.get("error_code")
         error_code_description = resp.get("error_code_description")
         error_message = resp.get("error_message")
@@ -117,7 +117,7 @@ class MetaTrader4ClientConnector:
                     response = self._pull_socket.recv_json(zmq.DONTWAIT)
                     if response is not None:
                         self._print_trace(f"Response: {response}")
-                        self.latest_response = response
+                        self._latest_response = response
                 except zmq.ZMQError as e:
                     self._print_exception(e)
 
