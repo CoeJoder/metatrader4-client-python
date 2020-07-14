@@ -5,8 +5,7 @@ from typing import Any, Dict
 from time import sleep
 from threading import Thread
 
-from api.account import Account
-from api.errors import MT4Error
+from mt4client.api import Account, MT4Error
 
 
 class MT4Client:

@@ -2,7 +2,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from client import MT4Client
+    from mt4client.client import MT4Client
 
 
 class AccountInfoInteger(Enum):
@@ -114,6 +114,67 @@ class Account:
         """Mode for setting the minimal allowed margin."""
         val = self._get_account_info_integer(AccountInfoInteger.ACCOUNT_MARGIN_SO_MODE)
         return AccountStopoutMode(val)
+
+    @property
+    def trade_allowed(self) -> bool:
+        """Allowed trade for the current account."""
+        val = self._get_account_info_integer(AccountInfoInteger.ACCOUNT_TRADE_ALLOWED)
+        return bool(val)
+
+    @property
+    def trade_expert(self) -> int:
+        """Allowed trade for an Expert Advisor."""
+        val = self._get_account_info_integer(AccountInfoInteger.ACCOUNT_TRADE_EXPERT)
+        return bool(val)
+
+    @property
+    def balance(self) -> float:
+        """Account balance in the deposit currency."""
+        return self._get_account_info_double(AccountInfoDouble.ACCOUNT_BALANCE)
+
+    @property
+    def credit(self) -> float:
+        """Account credit in the deposit currency."""
+        return self._get_account_info_double(AccountInfoDouble.ACCOUNT_CREDIT)
+
+    @property
+    def profit(self) -> float:
+        """Current profit of an account in the deposit currency."""
+        return self._get_account_info_double(AccountInfoDouble.ACCOUNT_PROFIT)
+
+    @property
+    def equity(self) -> float:
+        """Account equity in the deposit currency."""
+        return self._get_account_info_double(AccountInfoDouble.ACCOUNT_EQUITY)
+
+    @property
+    def margin(self) -> float:
+        """Account margin used in the deposit currency."""
+        return self._get_account_info_double(AccountInfoDouble.ACCOUNT_MARGIN)
+
+    @property
+    def margin_free(self) -> float:
+        """Free margin of an account in the deposit currency."""
+        return self._get_account_info_double(AccountInfoDouble.ACCOUNT_MARGIN_FREE)
+
+    @property
+    def margin_level(self) -> float:
+        """Account margin level in percents."""
+        return self._get_account_info_double(AccountInfoDouble.ACCOUNT_MARGIN_LEVEL)
+
+    @property
+    def margin_so_call(self) -> float:
+        """Margin call level. Depending on :attr:`margin_level`, this is expressed in percents or in
+        the deposit currency.
+        """
+        return self._get_account_info_double(AccountInfoDouble.ACCOUNT_MARGIN_SO_CALL)
+
+    @property
+    def margin_so_so(self) -> float:
+        """Margin stop out level. Depending on the :attr:`margin_so_mode`, this is expressed in percents or in
+        the deposit currency.
+        """
+        return self._get_account_info_double(AccountInfoDouble.ACCOUNT_MARGIN_SO_SO)
 
     def _get_account_info_integer(self, prop: AccountInfoInteger) -> int:
         return self._mt4._get_response(request={
