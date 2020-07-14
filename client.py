@@ -4,6 +4,8 @@ from time import time
 from typing import Any, Dict
 from time import sleep
 from threading import Thread
+
+from api.account import Account
 from api.errors import MT4Error
 
 
@@ -58,6 +60,10 @@ class MT4Client:
 
         # close all sockets immediately and terminate context
         self._context.destroy(0)
+
+    def account(self):
+        """Get an interface for querying account details."""
+        return Account.fetch(self)
 
     def _get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
         """

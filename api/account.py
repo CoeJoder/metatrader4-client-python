@@ -1,4 +1,8 @@
+from __future__ import annotations
 from enum import Enum
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from client import MT4Client
 
 
 class AccountInfoInteger(Enum):
@@ -60,3 +64,38 @@ class AccountTradeMode(Enum):
     ACCOUNT_TRADE_MODE_DEMO = 0
     ACCOUNT_TRADE_MODE_CONTEST = 1
     ACCOUNT_TRADE_MODE_REAL = 2
+
+
+class Account:
+    """A MetaTrader 4 account."""
+
+    @classmethod
+    def fetch(cls, mt4: MT4Client):
+        """Fetches static data for the account and returns an instance of this class."""
+        resp = mt4._get_response(request={
+            "action": "GET_ACCOUNT_INFO"
+        }, timeout_message="Failed to fetch account.")
+        return cls(mt4=mt4, **resp)
+
+    def __init__(self, mt4: MT4Client, login: int, trade_mode: int, name: str, server: str, currency: str,
+                 company: str):
+        self._mt4 = mt4
+
+        self.login = login
+        """The account number."""
+
+        self.trade_mode = AccountTradeMode(trade_mode)
+        """Account trade mode."""
+
+        self.name = name
+        """Client name."""
+
+        self.server = server
+        """Trade server name."""
+
+        self.currency = currency
+        """Account currency."""
+
+        self.company = company
+        """Name of a company that serves the account."""
+
