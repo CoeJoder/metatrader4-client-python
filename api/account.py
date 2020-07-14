@@ -99,7 +99,21 @@ class Account:
         self.company = company
         """Name of a company that serves the account."""
 
+    @property
+    def leverage(self) -> int:
+        """Account leverage."""
+        return self._get_account_info_integer(AccountInfoInteger.ACCOUNT_LEVERAGE)
 
+    @property
+    def limit_orders(self) -> int:
+        """Maximum allowed number of open positions and active pending orders (in total), 0 = unlimited."""
+        return self._get_account_info_integer(AccountInfoInteger.ACCOUNT_LIMIT_ORDERS)
+
+    @property
+    def margin_so_mode(self) -> AccountStopoutMode:
+        """Mode for setting the minimal allowed margin."""
+        val = self._get_account_info_integer(AccountInfoInteger.ACCOUNT_MARGIN_SO_MODE)
+        return AccountStopoutMode(val)
 
     def _get_account_info_integer(self, prop: AccountInfoInteger) -> int:
         return self._mt4._get_response(request={
