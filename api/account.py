@@ -99,3 +99,16 @@ class Account:
         self.company = company
         """Name of a company that serves the account."""
 
+
+
+    def _get_account_info_integer(self, prop: AccountInfoInteger) -> int:
+        return self._mt4._get_response(request={
+            "action": "GET_ACCOUNT_INFO_INTEGER",
+            "property_id": prop.value
+        }, timeout_message="Failed to get " + prop.name)
+
+    def _get_account_info_double(self, prop: AccountInfoDouble) -> float:
+        return self._mt4._get_response(request={
+            "action": "GET_ACCOUNT_INFO_DOUBLE",
+            "property_id": prop.value
+        }, timeout_message="Failed to get " + prop.name)
