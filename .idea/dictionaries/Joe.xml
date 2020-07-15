@@ -2,6 +2,7 @@
   <dictionary name="Joe">
     <words>
       <w>advisor</w>
+      <w>pytest</w>
     </words>
   </dictionary>
 </component>
