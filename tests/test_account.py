@@ -8,7 +8,7 @@ from mt4client import MT4Client
 
 @pytest.fixture(scope="module")
 def account(mt4: MT4Client) -> Account:
-    return Account.fetch(mt4)
+    return mt4.account()
 
 
 def test_account_login(account: Account):
