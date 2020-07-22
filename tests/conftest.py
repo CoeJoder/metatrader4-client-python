@@ -1,7 +1,7 @@
 """Pytest config for integration tests."""
 
 import pytest
-from mt4client.client import MT4Client
+from mt4client import MT4Client
 
 
 @pytest.fixture(scope='session', autouse=True)
