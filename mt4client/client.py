@@ -1,7 +1,7 @@
 import zmq
 
 from time import time
-from typing import Any, Dict
+from typing import Any, Dict, List
 from time import sleep
 from threading import Thread
 
@@ -60,9 +60,17 @@ class MT4Client:
         # close all sockets immediately and terminate context
         self._context.destroy(0)
 
-    def account(self):
+    def account(self) -> Account:
         """Get an interface for querying account details."""
-        return Account.fetch(self)
+        resp = self._get_response(request={"action": "GET_ACCOUNT_INFO"},
+                                  timeout_message="Failed to fetch account.")
+        return Account(mt4=self, **resp)
+
+    def symbols(self) -> List[str]:
+        """Get the list of market symbols supported by the broker."""
+        return self._get_response(request={"action": "GET_SYMBOLS"},
+                                  timeout_message="Failed to fetch market symbols.",
+                                  default=[])
 
     def _get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
         """

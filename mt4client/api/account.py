@@ -69,14 +69,6 @@ class AccountTradeMode(Enum):
 class Account:
     """A MetaTrader 4 account."""
 
-    @classmethod
-    def fetch(cls, mt4: MT4Client):
-        """Fetches static data for the account and returns an instance of this class."""
-        resp = mt4._get_response(request={
-            "action": "GET_ACCOUNT_INFO"
-        }, timeout_message="Failed to fetch account.")
-        return cls(mt4=mt4, **resp)
-
     def __init__(self, mt4: MT4Client, login: int, trade_mode: int, name: str, server: str, currency: str,
                  company: str):
         self._mt4 = mt4
