@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from time import sleep
 from threading import Thread
 
-from mt4client.api import Account, MT4Error
+from mt4client.api import Account, MT4Error, Symbol
 
 
 class MT4Client:
@@ -63,14 +63,22 @@ class MT4Client:
     def account(self) -> Account:
         """Get an interface for querying account details."""
         resp = self._get_response(request={"action": "GET_ACCOUNT_INFO"},
-                                  timeout_message="Failed to fetch account.")
+                                  timeout_message="Failed to fetch account")
         return Account(mt4=self, **resp)
 
     def symbols(self) -> List[str]:
         """Get the list of market symbols supported by the broker."""
         return self._get_response(request={"action": "GET_SYMBOLS"},
-                                  timeout_message="Failed to fetch market symbols.",
+                                  timeout_message="Failed to fetch market symbols",
                                   default=[])
+
+    def symbol(self, symbol: str) -> Symbol:
+        """Get an interface for querying info about a market symbol."""
+        resp = self._get_response(request={
+            "action": "GET_SYMBOL_INFO",
+            "symbol": symbol
+        }, timeout_message=f"Failed to fetch symbol: '{symbol}'")
+        return Symbol(mt4=self, **resp)
 
     def _get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
         """
