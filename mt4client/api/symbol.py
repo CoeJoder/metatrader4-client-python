@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Union, List
-from mt4client.api import StandardTimeframe, NonStandardTimeframe, parse_timeframe
+from mt4client.api import StandardTimeframe, NonStandardTimeframe, parse_timeframe, OHLCV
+
 if TYPE_CHECKING:
     from mt4client.client import MT4Client
 
@@ -118,6 +119,27 @@ class Symbol:
             "symbol": self.name,
             "property": prop
         }, timeout_message=f"Failed to get market info '{prop}' for symbol '{self.name}'")
+
+    def ohlcv(self, timeframe: Union[str, StandardTimeframe, NonStandardTimeframe], limit: int = 100,
+              timeout: int = 5000) -> List[OHLCV]:
+        """
+        Fetches OHLCV data for this symbol, up to the current time.
+
+        :param timeframe:   The period.  Use a standard timeframe for a higher likelihood of success.
+        :param limit:       The maximum number of bars to get.
+        :param timeout:     The maximum milliseconds to wait for the broker's server to provide the requested data.
+        :return:            A list of OHLCV bars, sorted oldest-to-newest, each having the following structure:
+                            [time, open, high, low, close, volume]
+        """
+        period = parse_timeframe(timeframe).value if isinstance(timeframe, str) else timeframe.value
+        bars = self._mt4._get_response(request={
+            "action": "GET_OHLCV",
+            "symbol": self.name,
+            "timeframe": period,
+            "limit": limit,
+            "timeout": timeout
+        }, timeout_message="Failed to get OHLCV data", default=[])
+        return [OHLCV(**bar) for bar in bars]
 
     def __repr__(self):
         return (f'{self.__class__.__name__}('

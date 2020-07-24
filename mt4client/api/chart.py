@@ -51,6 +51,27 @@ class NonStandardTimeframe(Enum):
         return False
 
 
+class OHLCV(object):
+    """An OHLCV bar."""
+
+    def __init__(self, open: int, high: int, low: int, close: int, tick_volume: int, time: int):
+        self.open = open
+        self.high = high
+        self.low = low
+        self.close = close
+        self.tick_volume = tick_volume
+        self.time = time
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'open="{self.open}, '
+                f'high={self.high}, '
+                f'low={self.low}, '
+                f'close={self.close}, '
+                f'tick_volume={self.tick_volume}, '
+                f'time={self.time})')
+
+
 def parse_timeframe(timeframe: str) -> Union[StandardTimeframe, NonStandardTimeframe]:
     """
     Parses a timeframe string.  An exception is raised if timeframe is invalid or parsing fails.
