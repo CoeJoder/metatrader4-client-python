@@ -84,7 +84,7 @@ def parse_timeframe(timeframe: str) -> Union[StandardTimeframe, NonStandardTimef
 
     p = re.compile(r"(\d+)([mhdwn]+)", re.IGNORECASE)
     m = p.match(timeframe)
-    if len(m.groups()) == 2:
+    if m is not None and len(m.groups()) == 2:
         name = "PERIOD_" + m.group(2).upper() + m.group(1)
         try:
             return StandardTimeframe[name]
