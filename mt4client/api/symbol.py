@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union, List
+from mt4client.api import StandardTimeframe, NonStandardTimeframe, parse_timeframe
 if TYPE_CHECKING:
     from mt4client.client import MT4Client
 
@@ -94,10 +95,43 @@ class Symbol:
         self.freeze_level = freeze_level
         """The order freeze level in points."""
 
-    def fetch_tick(self) -> SymbolTick:
-        """Fetches the latest market prices of this symbol."""
+    def tick(self) -> SymbolTick:
+        """Get the latest market prices of this symbol."""
         resp = self._mt4._get_response(request={
             "action": "GET_SYMBOL_TICK",
             "symbol": self.name
         }, timeout_message=f"Failed to get last tick for symbol: '{self.name}'")
         return SymbolTick(**resp)
+
+    def market_info(self, prop: str) -> Union[int, float, str]:
+        """
+        Fetches live market info about a symbol.
+
+        References:
+            https://docs.mql4.com/constants/environment_state/marketinfoconstants
+
+        :param prop:    A valid property accepted by `MarketInfo(:property)`.  E.g. `MODE_SPREAD`
+        :return:        The value returned by `MarketInfo(:property)`
+        """
+        return self._mt4._get_response(request={
+            "action": "GET_SYMBOL_MARKET_INFO",
+            "symbol": self.name,
+            "property": prop
+        }, timeout_message=f"Failed to get market info '{prop}' for symbol '{self.name}'")
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'name="{self.name}, '
+                f'point_size={self.point_size}, '
+                f'digits={self.digits}, '
+                f'lot_size={self.lot_size}, '
+                f'tick_value={self.tick_value}, '
+                f'tick_size={self.tick_size}, '
+                f'min_lot={self.min_lot}, '
+                f'lot_step={self.lot_step}, '
+                f'max_lot={self.max_lot}, '
+                f'margin_init={self.margin_init}, '
+                f'margin_maintenance={self.margin_maintenance}, '
+                f'margin_hedged={self.margin_hedged}, '
+                f'margin_required={self.margin_required}, '
+                f'freeze_level={self.freeze_level})')
