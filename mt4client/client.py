@@ -1,11 +1,9 @@
 import zmq
 
-from time import time
-from typing import Any, Dict, List
-from time import sleep
+from time import time, sleep
 from threading import Thread
-
-from mt4client.api import Account, MT4Error, Symbol
+from typing import Any, Dict, List
+from mt4client.api import Account, MT4Error, Signal, Symbol
 
 
 class MT4Client:
@@ -73,12 +71,19 @@ class MT4Client:
                                   default=[])
 
     def symbol(self, symbol: str) -> Symbol:
-        """Get an interface for querying info about a market symbol."""
+        """Get an interface for querying about a market symbol."""
         resp = self._get_response(request={
             "action": "GET_SYMBOL_INFO",
             "symbol": symbol
         }, timeout_message=f"Failed to fetch symbol: '{symbol}'")
         return Symbol(mt4=self, **resp)
+
+    def signals(self) -> Dict[str, Signal]:
+        """Gets all trading signals from the MT4 terminal."""
+        resp = self._get_response(request={"action": "GET_SIGNALS"},
+                                  timeout_message="Failed to get trading signals",
+                                  default={})
+        return {key: Signal(**value) for key, value in resp.items()}
 
     def _get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
         """

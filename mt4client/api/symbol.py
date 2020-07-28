@@ -106,7 +106,7 @@ class Symbol:
 
     def market_info(self, prop: str) -> Union[int, float, str]:
         """
-        Fetches live market info about a symbol.
+        Get live market info about a symbol.
 
         References:
             https://docs.mql4.com/constants/environment_state/marketinfoconstants
