@@ -95,4 +95,4 @@ class Signal:
                 f'gain={self.gain}, '
                 f'max_drawdown={self.max_drawdown}, '
                 f'price={self.price}, '
-                f'roi={self.roi}")')
+                f'roi={self.roi})')

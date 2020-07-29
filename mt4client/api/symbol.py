@@ -143,7 +143,7 @@ class Symbol:
 
     def __repr__(self):
         return (f'{self.__class__.__name__}('
-                f'name="{self.name}, '
+                f'name={self.name}, '
                 f'point_size={self.point_size}, '
                 f'digits={self.digits}, '
                 f'lot_size={self.lot_size}, '
