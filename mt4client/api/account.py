@@ -179,3 +179,12 @@ class Account:
             "action": "GET_ACCOUNT_INFO_DOUBLE",
             "property_id": prop.value
         }, timeout_message="Failed to get " + prop.name)
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'login={self.login}, '
+                f'trade_mode={self.trade_mode}, '
+                f'name={self.name}, '
+                f'server={self.server}, '
+                f'currency={self.currency}, '
+                f'company={self.company})')
