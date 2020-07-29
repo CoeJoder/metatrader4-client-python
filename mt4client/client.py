@@ -2,7 +2,7 @@ import zmq
 
 from time import time, sleep
 from threading import Thread
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 from mt4client.api import Account, MT4Error, Signal, Symbol
 
 
@@ -79,11 +79,30 @@ class MT4Client:
         return Symbol(mt4=self, **resp)
 
     def signals(self) -> Dict[str, Signal]:
-        """Gets all trading signals from the MT4 terminal."""
+        """Get all trading signals from the MT4 terminal."""
         resp = self._get_response(request={"action": "GET_SIGNALS"},
                                   timeout_message="Failed to get trading signals",
                                   default={})
         return {key: Signal(**value) for key, value in resp.items()}
+
+    def indicator(self, func: str, args: List[Union[str, int, float]], timeout: int = 5000) -> float:
+        """
+        Run a built-in indicator function.
+
+        References:
+            https://docs.mql4.com/indicators
+
+        :param func:    The name of the indicator function.
+        :param args:    A list of function arguments.
+        :param timeout: The maximum milliseconds to wait for the symbol's chart data to load.
+        :return:        The numeric result.
+        """
+        return self._get_response(request={
+            "action": "RUN_INDICATOR",
+            "indicator": func,
+            "argv": args,
+            "timeout": timeout
+        }, timeout_message="Failed to run indicator")
 
     def _get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
         """
