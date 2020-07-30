@@ -2,6 +2,7 @@
   <dictionary name="Joe">
     <words>
       <w>advisor</w>
+      <w>eurusd</w>
       <w>ohlcv</w>
       <w>pytest</w>
       <w>timeframe</w>
