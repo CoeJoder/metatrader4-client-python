@@ -1,8 +1,8 @@
-"""Integration tests for the Symbol API."""
+"""Integration tests for the symbol-related functions."""
 
 import pytest
 
-from mt4client.api import Symbol
+from mt4client.api import Symbol, StandardTimeframe
 from mt4client import MT4Client
 
 
@@ -30,3 +30,25 @@ def test_fetch_ohlcv(symbol: Symbol):
     assert isinstance(ohlcv, list)
     assert len(ohlcv) == 100
     print(f"Found {len(ohlcv)} OHLCV bars. The first one: {ohlcv[0]}")
+
+
+def test_symbols(mt4: MT4Client):
+    symbols = mt4.symbols()
+    assert isinstance(symbols, list)
+    print(f"All symbols: {symbols}")
+
+
+def test_signals(mt4: MT4Client):
+    signals = mt4.signals()
+    assert isinstance(signals, dict)
+    assert len(signals) > 0
+    print(f"Found {len(signals)} signals. The first one: {next(iter(signals.items()))}")
+
+
+def test_indicator(mt4: MT4Client, symbol: Symbol):
+    func = "iAC"
+    args = [symbol.name, StandardTimeframe.PERIOD_H1.value, 1]
+    result = mt4.indicator(func, args)
+    assert isinstance(result, float)
+    print(f"{func}({str(args)[1:-1]}) = {result}")
+

@@ -1,4 +1,4 @@
-"""Integration tests for the Account API."""
+"""Integration tests for the account-related functions."""
 
 import pytest
 

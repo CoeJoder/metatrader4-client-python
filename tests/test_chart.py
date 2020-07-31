@@ -1,4 +1,4 @@
-"""Unit tests for the chart functions."""
+"""Unit tests for chart-related functions."""
 
 from mt4client.api import parse_timeframe, StandardTimeframe, NonStandardTimeframe
 
