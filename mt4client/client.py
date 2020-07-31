@@ -59,31 +59,43 @@ class MT4Client:
         self._context.destroy(0)
 
     def account(self) -> Account:
-        """Get an interface for querying account details."""
+        """Get a query interface for the account details."""
         resp = self._get_response(request={"action": "GET_ACCOUNT_INFO"},
                                   timeout_message="Failed to fetch account")
         return Account(mt4=self, **resp)
 
-    def symbols(self) -> List[str]:
-        """Get the list of market symbols supported by the broker."""
+    def symbol_names(self) -> List[str]:
+        """Get the names of market symbols supported by the broker."""
         return self._get_response(request={"action": "GET_SYMBOLS"},
-                                  timeout_message="Failed to fetch market symbols",
+                                  timeout_message="Failed to fetch market symbol names",
                                   default=[])
 
     def symbol(self, symbol: str) -> Symbol:
-        """Get an interface for querying about a market symbol."""
+        """Get a query interface for a market symbol."""
         resp = self._get_response(request={
             "action": "GET_SYMBOL_INFO",
             "symbol": symbol
         }, timeout_message=f"Failed to fetch symbol: '{symbol}'")
         return Symbol(mt4=self, **resp)
 
-    def signals(self) -> Dict[str, Signal]:
-        """Get all trading signals from the MT4 terminal."""
-        resp = self._get_response(request={"action": "GET_SIGNALS"},
-                                  timeout_message="Failed to get trading signals",
-                                  default={})
-        return {key: Signal(**value) for key, value in resp.items()}
+    def signal_names(self) -> List[str]:
+        """Get the names of all trading signals."""
+        return self._get_response(request={"action": "GET_SIGNALS"},
+                                  timeout_message="Failed to get trading signal names",
+                                  default=[])
+
+    def signals(self, names: List[str]) -> Dict[str, Signal]:
+        """Get data for multiple trading signals."""
+        resp = self._get_response(request={
+            "action": "GET_SIGNAL_INFO",
+            "names": names
+        }, timeout_message="Failed to get trading signals", default={})
+        return {name: Signal(**resp[name]) for name in names}
+
+    def signal(self, name: str) -> Signal:
+        """Get data for a trading signal."""
+        resp = self.signals([name])
+        return resp[name]
 
     def indicator(self, func: str, args: List[Union[str, int, float]], timeout: int = 5000) -> float:
         """
