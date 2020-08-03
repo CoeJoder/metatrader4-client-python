@@ -70,13 +70,21 @@ class MT4Client:
                                   timeout_message="Failed to fetch market symbol names",
                                   default=[])
 
-    def symbol(self, symbol: str) -> Symbol:
+    def symbols(self, *names: str) -> Dict[str, Symbol]:
+        """Get query interfaces for market symbols."""
+        resp = self._get_response(request={
+            "action": "GET_SYMBOL_INFO",
+            "names": names
+        }, timeout_message=f"Failed to fetch symbols")
+        return {name: Symbol(mt4=self, **resp[name]) for name in names}
+
+    def symbol(self, name: str) -> Symbol:
         """Get a query interface for a market symbol."""
         resp = self._get_response(request={
             "action": "GET_SYMBOL_INFO",
-            "symbol": symbol
-        }, timeout_message=f"Failed to fetch symbol: '{symbol}'")
-        return Symbol(mt4=self, **resp)
+            "names": [name]
+        }, timeout_message=f"Failed to fetch symbol")
+        return Symbol(mt4=self, **resp[name])
 
     def signal_names(self) -> List[str]:
         """Get the names of all trading signals."""
@@ -84,7 +92,7 @@ class MT4Client:
                                   timeout_message="Failed to get trading signal names",
                                   default=[])
 
-    def signals(self, names: List[str]) -> Dict[str, Signal]:
+    def signals(self, *names: str) -> Dict[str, Signal]:
         """Get data for multiple trading signals."""
         resp = self._get_response(request={
             "action": "GET_SIGNAL_INFO",
@@ -94,8 +102,11 @@ class MT4Client:
 
     def signal(self, name: str) -> Signal:
         """Get data for a trading signal."""
-        resp = self.signals([name])
-        return resp[name]
+        resp = self._get_response(request={
+            "action": "GET_SIGNAL_INFO",
+            "names": [name]
+        }, timeout_message="Failed to get trading signal", default={})
+        return Signal(**resp[name])
 
     def indicator(self, func: str, args: List[Union[str, int, float]], timeout: int = 5000) -> float:
         """

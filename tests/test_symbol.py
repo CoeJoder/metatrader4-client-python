@@ -32,10 +32,17 @@ def test_fetch_ohlcv(symbol: Symbol):
     print(f"Found {len(ohlcv)} OHLCV bars. The first one: {ohlcv[0]}")
 
 
+def test_symbol_names(mt4: MT4Client):
+    symbol_names = mt4.symbol_names()
+    assert isinstance(symbol_names, list)
+    print(f"All symbols: {symbol_names}")
+
+
 def test_symbols(mt4: MT4Client):
-    symbols = mt4.symbol_names()
-    assert isinstance(symbols, list)
-    print(f"All symbols: {symbols}")
+    symbols = mt4.symbols(*mt4.symbol_names()[0:3])
+    assert isinstance(symbols, dict)
+    assert len(symbols) == 3
+    print(f"Found {len(symbols)} symbols. The first one: {next(iter(symbols.items()))}")
 
 
 def test_signal_names(mt4: MT4Client):
@@ -46,7 +53,7 @@ def test_signal_names(mt4: MT4Client):
 
 
 def test_signals(mt4: MT4Client):
-    signals = mt4.signals(mt4.signal_names()[0:3])
+    signals = mt4.signals(*mt4.signal_names()[0:3])
     assert isinstance(signals, dict)
     assert len(signals) == 3
     print(f"Found {len(signals)} signals. The first one: {next(iter(signals.items()))}")
