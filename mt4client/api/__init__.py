@@ -3,3 +3,4 @@ from .chart import StandardTimeframe, NonStandardTimeframe, parse_timeframe, OHL
 from .errors import MT4Error
 from .symbol import Symbol, SymbolTick
 from .signal import Signal
+from .order import Order, OrderType
