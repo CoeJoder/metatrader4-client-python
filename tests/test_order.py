@@ -86,3 +86,39 @@ def test_limit_sell(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any]
     assert order.order_type == OrderType.OP_SELLLIMIT
     print(f"Order successful: {order}")
     return order
+
+
+def test_modify_open_order(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any]):
+    # place order
+    order_params["order_type"] = OrderType.OP_BUY
+    order = mt4.order_send_market(**order_params)
+
+    # add sl/tp stops
+    bid = symbol.tick().bid
+    points = 200
+    sl = bid - points * symbol.point_size
+    tp = bid + points * symbol.point_size
+
+    # modify order
+    order = mt4.order_modify(order=order, sl=sl, tp=tp)
+    assert order.sl < bid
+    assert order.tp > bid
+    print(f"Order open_price/sl/tp: {order.open_price}/{order.sl}/{order.tp}")
+
+
+def test_modify_pending_order(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any]):
+    # place order
+    order = test_limit_buy(mt4, symbol, order_params)
+    original_price = order.open_price
+
+    # lower the price and widen the sl/tp windows
+    new_price = original_price * 0.9
+    new_points = 100
+
+    # modify order
+    # order = trades.modify_pending_order(order=order, sl_points=new_points, tp_points=new_points)
+    order = mt4.order_modify(order=order, price=new_price, sl_points=new_points, tp_points=new_points)
+    assert order.open_price < original_price
+    assert order.sl < new_price
+    assert order.tp > new_price
+    print(f"Order open_price/sl/tp: {order.open_price}/{order.sl}/{order.tp}")
