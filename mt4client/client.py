@@ -213,6 +213,49 @@ class MT4Client:
             raise ValueError("Not a pending order type: " + str(order_type))
         return self._order_send(symbol.name, order_type, lots, price, slippage, sl, tp, sl_points, tp_points, comment)
 
+    def order_modify_market(self, order: Order, sl: float = None, tp: float = None, sl_points: int = None,
+                            tp_points: int = None) -> Order:
+        """
+        Modify a market order.
+
+        References:
+            https://book.mql4.com/trading/ordermodify
+
+            https://book.mql4.com/appendix/limits
+
+        :param order:       A market order.
+        :param sl:          The absolute stop-loss to use.  Optional.
+        :param tp:          The absolute take-profit to use.  Optional.
+        :param sl_points:   The relative stop-loss to use, in points.  Optional.
+        :param tp_points:   The relative take-profit to use, in points.  Optional.
+        :return:            The Order with the updated values.
+        """
+        if not order.order_type.is_market:
+            raise ValueError("Not a market order type: " + str(order.order_type))
+        return self._order_modify(order=order, sl=sl, tp=tp, sl_points=sl_points, tp_points=tp_points)
+
+    def order_modify_pending(self, order: Order, price: float = None, sl: float = None, tp: float = None,
+                             sl_points: int = None, tp_points: int = None) -> Order:
+        """
+        Modify a pending order.
+
+        References:
+            https://book.mql4.com/trading/ordermodify
+
+            https://book.mql4.com/appendix/limits
+
+        :param order:       A pending order.
+        :param price:       The desired open price.  Optional.
+        :param sl:          The absolute stop-loss to use.  Optional.
+        :param tp:          The absolute take-profit to use.  Optional.
+        :param sl_points:   The relative stop-loss to use, in points.  Optional.
+        :param tp_points:   The relative take-profit to use, in points.  Optional.
+        :return:            The Order with the updated values.
+        """
+        if not order.order_type.is_pending:
+            raise ValueError("Not a pending order type: " + str(order.order_type))
+        return self._order_modify(order, price, sl, tp, sl_points, tp_points)
+
     def _order_send(self, symbol: str, order_type: OrderType, lots: float, price: float, slippage: int,
                     sl: float = None, tp: float = None, sl_points: int = None, tp_points: int = None,
                     comment: str = "") -> Order:
@@ -231,6 +274,19 @@ class MT4Client:
             "tp_points": tp_points,
             "comment": comment
         }, timeout_message="Failed to send order")
+        return Order(**resp)
+
+    def _order_modify(self, order: Order, price: float = None, sl: float = None, tp: float = None,
+                      sl_points: int = None, tp_points: int = None) -> Order:
+        resp = self._get_response(request={
+            "action": "DO_ORDER_MODIFY",
+            "ticket": order.ticket,
+            "price": price,
+            "sl": sl,
+            "tp": tp,
+            "sl_points": sl_points,
+            "tp_points": tp_points
+        }, timeout_message="Failed to modify order")
         return Order(**resp)
 
     def _get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
