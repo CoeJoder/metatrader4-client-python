@@ -159,11 +159,11 @@ class MT4Client:
         }, timeout_message="Failed to get order")
         return Order(**resp)
 
-    def order_send_market(self, symbol: Symbol, order_type: OrderType, lots: float, price: float = None,
-                          slippage: int = None, sl: float = None, tp: float = None, sl_points: int = None,
-                          tp_points: int = None, comment: str = "") -> Order:
+    def order_send(self, symbol: Symbol, order_type: OrderType, lots: float, price: float = None,
+                   slippage: int = None, sl: float = None, tp: float = None, sl_points: int = None,
+                   tp_points: int = None, comment: str = "") -> Order:
         """
-        Create a new market order at the current bid/ask price.
+        Create a new order.
 
         References:
             https://docs.mql4.com/trading/ordersend
@@ -173,7 +173,7 @@ class MT4Client:
         :param symbol:          The market symbol.
         :param order_type:      The market order type.
         :param lots:            The number of lots to trade.
-        :param price:           The desired open price.  Omit to use market price.
+        :param price:           The desired open price.  Optional for market orders.
         :param slippage:        The maximum price slippage, in points.  Omit to use a permissive default (2.0 * spread).
         :param sl:              The absolute stop-loss to use.  Optional.
         :param tp:              The absolute take-profit to use.  Optional.
@@ -182,36 +182,24 @@ class MT4Client:
         :param comment:         The order comment text.  Last part of the comment may be changed by server.  Optional.
         :return:                The new Order.
         """
-        if not order_type.is_market:
-            raise ValueError("Not a market order type: " + str(order_type))
-        return self._order_send(symbol.name, order_type, lots, price, slippage, sl, tp, sl_points, tp_points, comment)
-
-    def order_send_pending(self, symbol: Symbol, order_type: OrderType, lots: float, price: float,
-                           slippage: int = None, sl: float = None, tp: float = None,
-                           sl_points: int = None, tp_points: int = None, comment: str = "") -> Order:
-        """
-        Create a new pending order to be opened at the given price.
-
-        References:
-            https://docs.mql4.com/trading/ordersend
-
-            https://book.mql4.com/appendix/limits
-
-        :param symbol:          The market symbol.
-        :param order_type:      The pending order type.
-        :param lots:            The number of lots to trade.
-        :param price:           The desired open price.
-        :param slippage:        The maximum price slippage, in points.  Omit to use a permissive default (2.0 * spread).
-        :param sl:              The absolute stop-loss to use.  Optional.
-        :param tp:              The absolute take-profit to use.  Optional.
-        :param sl_points:       The relative stop-loss to use, in points.  Optional.
-        :param tp_points:       The relative take-profit to use, in points.  Optional.
-        :param comment:         The order comment text.  Last part of the comment may be changed by server.  Optional.
-        :return:                The new Order.
-        """
-        if not order_type.is_pending:
-            raise ValueError("Not a pending order type: " + str(order_type))
-        return self._order_send(symbol.name, order_type, lots, price, slippage, sl, tp, sl_points, tp_points, comment)
+        if not order_type.is_buy and not order_type.is_sell:
+            raise ValueError("Invalid order type: " + str(order_type))
+        if order_type.is_pending and price is None:
+            raise ValueError("Pending orders must specify a price")
+        resp = self._get_response(request={
+            "action": "DO_ORDER_SEND",
+            "symbol": symbol,
+            "order_type": order_type.value,
+            "lots": lots,
+            "price": price,
+            "slippage": slippage,
+            "sl": sl,
+            "tp": tp,
+            "sl_points": sl_points,
+            "tp_points": tp_points,
+            "comment": comment
+        }, timeout_message="Failed to send order")
+        return Order(**resp)
 
     def order_modify(self, order: Union[Order, int], price: float = None, sl: float = None, tp: float = None,
                      sl_points: int = None, tp_points: int = None) -> Order:
@@ -240,26 +228,6 @@ class MT4Client:
             "sl_points": sl_points,
             "tp_points": tp_points
         }, timeout_message="Failed to modify order")
-        return Order(**resp)
-
-    def _order_send(self, symbol: str, order_type: OrderType, lots: float, price: float, slippage: int,
-                    sl: float = None, tp: float = None, sl_points: int = None, tp_points: int = None,
-                    comment: str = "") -> Order:
-        if not order_type.is_buy and not order_type.is_sell:
-            raise ValueError("Invalid order type: " + str(order_type))
-        resp = self._get_response(request={
-            "action": "DO_ORDER_SEND",
-            "symbol": symbol,
-            "order_type": order_type.value,
-            "lots": lots,
-            "price": price,
-            "slippage": slippage,
-            "sl": sl,
-            "tp": tp,
-            "sl_points": sl_points,
-            "tp_points": tp_points,
-            "comment": comment
-        }, timeout_message="Failed to send order")
         return Order(**resp)
 
     def _get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
