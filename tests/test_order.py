@@ -31,7 +31,7 @@ def test_market_buy(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any]
     order_params["order_type"] = OrderType.OP_BUY
     order_params["sl_points"] = points
     order_params["tp_points"] = points
-    order = mt4.order_send_market(**order_params)
+    order = mt4.order_send(**order_params)
 
     assert isinstance(order, Order)
     assert order.order_type == OrderType.OP_BUY
@@ -48,7 +48,7 @@ def test_market_sell(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any
     order_params["order_type"] = OrderType.OP_SELL
     order_params["sl"] = bid + points * symbol.point_size
     order_params["tp"] = bid - points * symbol.point_size
-    order = mt4.order_send_market(**order_params)
+    order = mt4.order_send(**order_params)
 
     assert isinstance(order, Order)
     assert order.order_type == OrderType.OP_SELL
@@ -66,7 +66,7 @@ def test_limit_buy(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any])
     order_params["slippage"] = 1
     order_params["sl_points"] = 100
     order_params["tp_points"] = 100
-    order = mt4.order_send_pending(**order_params)
+    order = mt4.order_send(**order_params)
 
     assert isinstance(order, Order)
     assert order.order_type == OrderType.OP_BUYLIMIT
@@ -80,7 +80,7 @@ def test_limit_sell(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any]
     order_params["order_type"] = OrderType.OP_SELLLIMIT
     order_params["price"] = optimistic_sell_price
     order_params["slippage"] = 1
-    order = mt4.order_send_pending(**order_params)
+    order = mt4.order_send(**order_params)
 
     assert isinstance(order, Order)
     assert order.order_type == OrderType.OP_SELLLIMIT
@@ -91,7 +91,7 @@ def test_limit_sell(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any]
 def test_modify_open_order(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any]):
     # place order
     order_params["order_type"] = OrderType.OP_BUY
-    order = mt4.order_send_market(**order_params)
+    order = mt4.order_send(**order_params)
 
     # add sl/tp stops
     bid = symbol.tick().bid
@@ -108,7 +108,13 @@ def test_modify_open_order(mt4: MT4Client, symbol: Symbol, order_params: Dict[st
 
 def test_modify_pending_order(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any]):
     # place order
-    order = test_limit_buy(mt4, symbol, order_params)
+    optimistic_buy_price = symbol.tick().ask / 2
+    order_params["order_type"] = OrderType.OP_BUYLIMIT
+    order_params["price"] = optimistic_buy_price
+    order_params["slippage"] = 1
+    order_params["sl_points"] = 100
+    order_params["tp_points"] = 100
+    order = mt4.order_send(**order_params)
     original_price = order.open_price
 
     # lower the price and widen the sl/tp windows
