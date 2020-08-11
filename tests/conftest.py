@@ -2,6 +2,7 @@
 
 import pytest
 from mt4client import MT4Client
+from mt4client.api import Symbol
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -14,3 +15,8 @@ def mt4() -> MT4Client:
 @pytest.fixture(scope="session", autouse=True)
 def symbol_name() -> str:
     return "EURUSD"
+
+
+@pytest.fixture(scope="session")
+def symbol(mt4: MT4Client, symbol_name: str) -> Symbol:
+    return mt4.symbol(symbol_name)

@@ -1,11 +1,5 @@
-import pytest
 from mt4client import MT4Client
 from mt4client.api import Symbol, Order, OrderType
-
-
-@pytest.fixture(scope="module")
-def symbol(mt4: MT4Client, symbol_name: str) -> Symbol:
-    return mt4.symbol(symbol_name)
 
 
 def test_market_buy(mt4: MT4Client, symbol: Symbol) -> Order:
