@@ -201,3 +201,9 @@ class MT4Error(Exception):
             return "[MT4 Error {}: {}]\n  {}".format(self.error_code.value, self.error_code.name, self.message)
         else:
             return "[MT4 Error {}: {}]".format(self.error_code.value, self.error_code.name)
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__}('
+                f'error_code={self.error_code}, '
+                f'error_code_description={self.error_code_description}, '
+                f'message={self.message})')
