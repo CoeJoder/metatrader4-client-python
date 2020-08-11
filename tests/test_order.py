@@ -128,3 +128,40 @@ def test_modify_pending_order(mt4: MT4Client, symbol: Symbol, order_params: Dict
     assert order.sl < new_price
     assert order.tp > new_price
     print(f"Order open_price/sl/tp: {order.open_price}/{order.sl}/{order.tp}")
+
+
+def test_close_open_order(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any]):
+    order_params["order_type"] = OrderType.OP_BUY
+    order = mt4.order_send(**order_params)
+
+    # assert that the order was created and is open
+    assert order is not None
+    assert order.order_type == OrderType.OP_BUY
+
+    mt4.order_close(order)
+    search_results = [x for x in mt4.orders() if x.ticket == order.ticket]
+    assert len(search_results) == 0
+    print(f"Open order # {order.ticket} was closed.")
+
+
+def test_delete_pending_order(mt4: MT4Client, symbol: Symbol, order_params: Dict[str, Any]):
+    optimistic_buy_price = symbol.tick().ask / 2
+    order_params["order_type"] = OrderType.OP_BUYLIMIT
+    order_params["price"] = optimistic_buy_price
+    order = mt4.order_send(**order_params)
+
+    # assert that the order was created and is pending
+    assert order is not None
+    assert order.order_type == OrderType.OP_BUYLIMIT
+
+    mt4.order_close(order)
+    search_results = [x for x in mt4.orders() if x.ticket == order.ticket]
+    assert len(search_results) == 0
+    print(f"Pending order # {order.ticket} was deleted.")
+
+
+def test_close_all_orders(mt4: MT4Client):
+    # close/delete all orders
+    for order in mt4.orders():
+        mt4.order_close(order)
+    assert len(mt4.orders()) == 0
