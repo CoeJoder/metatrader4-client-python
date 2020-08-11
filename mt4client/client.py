@@ -230,6 +230,23 @@ class MT4Client:
         }, timeout_message="Failed to modify order")
         return Order(**resp)
 
+    def order_close(self, order: Union[Order, int]):
+        """
+        Closes an open order at market price, or deletes a pending order.  See MQL4 docs for trading rules and
+        guidelines.
+
+        References:
+            https://docs.mql4.com/trading/orderdelete
+
+            https://book.mql4.com/appendix/limits
+
+        :param order:   The order to close or delete or its ticket number.
+        """
+        self._get_response(request={
+            "action": "DO_ORDER_DELETE",
+            "ticket": order.ticket if isinstance(order, Order) else order
+        }, timeout_message="Failed to close or delete order")
+
     def _get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
         """
         Sends a request object to the server and waits for a response.
