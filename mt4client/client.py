@@ -14,6 +14,8 @@ class MT4Client:
                  response_timeout: int = 10, response_poll_delay: int = 0.1, socket_poll_timeout: int = 1000,
                  verbose: bool = False):
         """
+        Constructor.  Initializes the ZeroMQ sockets and connects to the MT4 terminal.
+
         :param host:                    The hostname or IP address of the server running the MetaTrader terminal.
         :param protocol:                The socket protocol.
         :param push_port:               The PUSH port.  Must match the bridge's PULL port.
@@ -59,19 +61,32 @@ class MT4Client:
         self._context.destroy(0)
 
     def account(self) -> Account:
-        """Get a query interface for the account details."""
+        """
+        Get a query interface for the account details.
+
+        :return:    The account object.
+        """
         resp = self._get_response(request={"action": "GET_ACCOUNT_INFO"},
                                   timeout_message="Failed to fetch account")
         return Account(mt4=self, **resp)
 
     def symbol_names(self) -> List[str]:
-        """Get the names of market symbols supported by the broker."""
+        """
+        Get the names of market symbols supported by the broker.
+
+        :return:    A list of symbol names.
+        """
         return self._get_response(request={"action": "GET_SYMBOLS"},
                                   timeout_message="Failed to fetch market symbol names",
                                   default=[])
 
     def symbols(self, *names: str) -> Dict[str, Symbol]:
-        """Get query interfaces for market symbols."""
+        """
+        Get query interfaces for market symbols.
+
+        :param names:   The names of the symbols.
+        :return:        A name-to-symbol dict of symbol objects.
+        """
         resp = self._get_response(request={
             "action": "GET_SYMBOL_INFO",
             "names": names
@@ -79,7 +94,12 @@ class MT4Client:
         return {name: Symbol(mt4=self, **resp[name]) for name in names}
 
     def symbol(self, name: str) -> Symbol:
-        """Get a query interface for a market symbol."""
+        """
+        Get a query interface for a market symbol.
+
+        :param name:    The name of the symbol.
+        :return:        The symbol object.
+        """
         resp = self._get_response(request={
             "action": "GET_SYMBOL_INFO",
             "names": [name]
@@ -87,13 +107,22 @@ class MT4Client:
         return Symbol(mt4=self, **resp[name])
 
     def signal_names(self) -> List[str]:
-        """Get the names of all trading signals."""
+        """
+        Get the names of all trading signals.
+
+        :return:    A list of names of the available signals.
+        """
         return self._get_response(request={"action": "GET_SIGNALS"},
                                   timeout_message="Failed to get trading signal names",
                                   default=[])
 
     def signals(self, *names: str) -> Dict[str, Signal]:
-        """Get data for multiple trading signals."""
+        """
+        Get data for multiple trading signals.
+
+        :param names:   The names of the signals.
+        :return:        A name-to-signal dict of signal objects.
+        """
         resp = self._get_response(request={
             "action": "GET_SIGNAL_INFO",
             "names": names
@@ -101,7 +130,12 @@ class MT4Client:
         return {name: Signal(**resp[name]) for name in names}
 
     def signal(self, name: str) -> Signal:
-        """Get data for a trading signal."""
+        """
+        Get data for a trading signal.
+
+        :param name:    The name of the signal.
+        :return:        The signal object.
+        """
         resp = self._get_response(request={
             "action": "GET_SIGNAL_INFO",
             "names": [name]
@@ -130,6 +164,7 @@ class MT4Client:
     def orders(self) -> List[Order]:
         """
         Get the pending and open orders from the Trades tab.
+
         :return:    A list of open or pending Orders.
         """
         resp = self._get_response(request={
@@ -140,6 +175,7 @@ class MT4Client:
     def orders_historical(self) -> List[Order]:
         """
         Get the deleted and closed orders from the Account History tab.
+
         :return:    A list of closed Orders.
         """
         resp = self._get_response(request={
@@ -150,6 +186,7 @@ class MT4Client:
     def order(self, ticket: int) -> Order:
         """
         Get an order by ticket number.  May be pending, open, or closed.
+
         :param ticket:  The ticket number.
         :return:        The Order object.
         """
