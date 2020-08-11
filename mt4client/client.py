@@ -134,7 +134,7 @@ class MT4Client:
         """
         resp = self._get_response(request={
             "action": "GET_ORDERS"
-        }, timeout_message="Failed to get orders")
+        }, timeout_message="Failed to get orders", default=[])
         return [Order(**order_dict) for order_dict in resp]
 
     def orders_historical(self) -> List[Order]:
@@ -144,7 +144,7 @@ class MT4Client:
         """
         resp = self._get_response(request={
             "action": "GET_HISTORICAL_ORDERS"
-        }, timeout_message="Failed to get orders")
+        }, timeout_message="Failed to get orders", default=[])
         return [Order(**order_dict) for order_dict in resp]
 
     def order(self, ticket: int) -> Order:
@@ -159,7 +159,7 @@ class MT4Client:
         }, timeout_message="Failed to get order")
         return Order(**resp)
 
-    def order_send(self, symbol: Symbol, order_type: OrderType, lots: float, price: float = None,
+    def order_send(self, symbol: Union[Symbol, str], order_type: OrderType, lots: float, price: float = None,
                    slippage: int = None, sl: float = None, tp: float = None, sl_points: int = None,
                    tp_points: int = None, comment: str = "") -> Order:
         """
@@ -170,7 +170,7 @@ class MT4Client:
 
             https://book.mql4.com/appendix/limits
 
-        :param symbol:          The market symbol.
+        :param symbol:          The market symbol object or name.
         :param order_type:      The market order type.
         :param lots:            The number of lots to trade.
         :param price:           The desired open price.  Optional for market orders.
@@ -188,7 +188,7 @@ class MT4Client:
             raise ValueError("Pending orders must specify a price")
         resp = self._get_response(request={
             "action": "DO_ORDER_SEND",
-            "symbol": symbol,
+            "symbol": symbol.name if isinstance(symbol, Symbol) else symbol,
             "order_type": order_type.value,
             "lots": lots,
             "price": price,
