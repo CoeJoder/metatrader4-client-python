@@ -92,7 +92,7 @@ class Order:
         self.symbol = symbol
         """The symbol name."""
 
-        self.order_type = OrderType(order_type)
+        self.order_type: OrderType = OrderType(order_type)
         """The order type."""
 
         self.lots = lots
