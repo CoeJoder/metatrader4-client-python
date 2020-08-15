@@ -53,7 +53,7 @@ class Signal:
         self.trades = trades
         """Number of trades."""
 
-        self.trade_mode = AccountTradeMode(trade_mode)
+        self.trade_mode: AccountTradeMode = AccountTradeMode(trade_mode)
         """Account type."""
 
         self.balance = balance

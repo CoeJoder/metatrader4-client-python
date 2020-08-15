@@ -76,7 +76,7 @@ class Account:
         self.login = login
         """The account number."""
 
-        self.trade_mode = AccountTradeMode(trade_mode)
+        self.trade_mode: AccountTradeMode = AccountTradeMode(trade_mode)
         """Account trade mode."""
 
         self.name = name

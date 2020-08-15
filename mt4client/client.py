@@ -269,24 +269,42 @@ class MT4Client:
 
     def order_close(self, order: Union[Order, int]):
         """
-        Closes an open order at market price, or deletes a pending order.  See MQL4 docs for trading rules and
-        guidelines.
+        Close an open order.
 
         References:
             https://docs.mql4.com/trading/orderdelete
 
             https://book.mql4.com/appendix/limits
 
-        :param order:   The order to close or delete or its ticket number.
+        :param order:   The order to close or its ticket number.
+        """
+        self._get_response(request={
+            "action": "DO_ORDER_CLOSE",
+            "ticket": order.ticket if isinstance(order, Order) else order
+        }, timeout_message="Failed to close order")
+
+    def order_delete(self, order: Union[Order, int], close_if_opened: bool = False):
+        """
+        Delete a pending order.
+
+        References:
+            https://docs.mql4.com/trading/orderdelete
+
+            https://book.mql4.com/appendix/limits
+
+        :param order:           The order to close or its ticket number.
+        :param close_if_opened: If true and the order is open, it is closed at market price.  If false and the order is
+                                open, an `ERR_INVALID_TICKET` error is raised.
         """
         self._get_response(request={
             "action": "DO_ORDER_DELETE",
+            "closeIfOpened": close_if_opened,
             "ticket": order.ticket if isinstance(order, Order) else order
-        }, timeout_message="Failed to close or delete order")
+        }, timeout_message="Failed to delete order")
 
     def _get_response(self, request: Dict[str, Any], timeout_message: str = "Timed out.", default: Any = None) -> Any:
         """
-        Sends a request object to the server and waits for a response.
+        Send a request object to the server and waits for a response.
 
         :param request:         The request to send.  Must have an `action` property.
         :param timeout_message: The message to raise if response times out.
@@ -323,7 +341,7 @@ class MT4Client:
 
     def _send_object(self, message: Dict[str, Any]):
         """
-        Sends a request object to the server, serialized as JSON.
+        Send a request object to the server, serialized as JSON.
 
         :param message: The request to send MetaTrader.  Must have an `action` property.
         """
