@@ -1,5 +1,5 @@
-# MetaTrader 4 -- ZeroMQ Python Client
-A Python 3 client connector and API for [MT4-ZMQ Bridge](https://github.com/CoeJoder/mt4-zeromq-bridge).
+# MetaTrader 4 Python Client
+A Python 3 client and API for the [MetaTrader 4 server](https://github.com/CoeJoder/metatrader4-server).
 
 ## Usage
 ```python
