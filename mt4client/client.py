@@ -10,9 +10,10 @@ class MT4Client:
     """Client interface for a MetaTrader bridge.  The connection is established using reciprocal
     PUSH/PULL ZeroMQ sockets."""
 
+    SOCKET_POLL_TIMEOUT = 1000
+
     def __init__(self, host: str = "localhost", protocol: str = "tcp", push_port: int = 28281, pull_port: int = 28282,
-                 response_timeout: int = 10, response_poll_delay: int = 0.1, socket_poll_timeout: int = 1000,
-                 verbose: bool = False):
+                 response_timeout: int = 10, response_poll_delay: int = 0.1, verbose: bool = False):
         """
         Constructor.  Initializes the ZeroMQ sockets and connects to the MT4 terminal.
 
@@ -22,14 +23,12 @@ class MT4Client:
         :param pull_port:               The PULL port.  Must match the bridge's PUSH port.
         :param response_timeout:        The number of seconds to wait for a response after a request is made.
         :param response_poll_delay:     The response polling interval in seconds.
-        :param socket_poll_timeout:     The socket polling timeout in milliseconds.
         :param verbose:                 Whether to print trace messages.
         """
         # the most recently PULL'd server response
         self._latest_response = None
 
         self._is_running = True
-        self._poll_timeout = socket_poll_timeout
         self._verbose = verbose
         self._response_poll_delay = response_poll_delay
         self._response_timeout = response_timeout
@@ -332,7 +331,7 @@ class MT4Client:
             raise MT4Error(error_code, error_code_description, error_message)
 
         # print any warnings to STDOUT
-        warning_message = "\n".join(resp["warnings"]) if "warnings" in resp else resp.get("warning")
+        warning_message = resp.get("warning")
         if warning_message is not None:
             print(str(warning_message))
 
@@ -345,7 +344,7 @@ class MT4Client:
 
         :param message: The request to send MetaTrader.  Must have an `action` property.
         """
-        if self._push_socket.poll(self._poll_timeout, zmq.POLLOUT):
+        if self._push_socket.poll(MT4Client.SOCKET_POLL_TIMEOUT, zmq.POLLOUT):
             try:
                 self._push_socket.send_json(message, zmq.DONTWAIT)
                 self._print_trace(f"Request:  {message}")
@@ -355,7 +354,7 @@ class MT4Client:
     def _poll_for_responses(self):
         """Background task.  Polls the pull-socket for JSON responses sent by MetaTrader."""
         while self._is_running:
-            if self._pull_socket.poll(self._poll_timeout, zmq.POLLIN):
+            if self._pull_socket.poll(MT4Client.SOCKET_POLL_TIMEOUT, zmq.POLLIN):
                 try:
                     response = self._pull_socket.recv_json(zmq.DONTWAIT)
                     if response is not None:
