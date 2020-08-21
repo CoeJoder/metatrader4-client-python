@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/mt4-zmq-client-python.iml" filepath="$PROJECT_DIR$/.idea/mt4-zmq-client-python.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/metatrader4-client-python.iml" filepath="$PROJECT_DIR$/.idea/metatrader4-client-python.iml" />
     </modules>
   </component>
 </project>
