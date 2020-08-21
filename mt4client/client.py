@@ -7,8 +7,8 @@ from mt4client.api import Account, MT4Error, Signal, Symbol, Order, OrderType
 class MT4Client:
     """Client interface for the MetaTrader 4 Server."""
 
-    def __init__(self, address: str = "tcp://localhost:28282", request_timeout_ms: int = 1000,
-                 response_timeout_ms: int = 1000, verbose: bool = False):
+    def __init__(self, address: str = "tcp://localhost:28282", request_timeout_ms: int = 10000,
+                 response_timeout_ms: int = 10000, verbose: bool = False):
         """
         Constructor.  Initialize the REQ socket and connect to the MT4 server.
 
