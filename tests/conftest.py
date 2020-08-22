@@ -7,7 +7,7 @@ from mt4client.api import Symbol
 
 @pytest.fixture(scope="session", autouse=True)
 def mt4() -> MT4Client:
-    mt4 = MT4Client(host="win10", push_port=28281, pull_port=28282, verbose=False)
+    mt4 = MT4Client(address="tcp://win10:28282", verbose=False)
     yield mt4
     mt4.shutdown()
 

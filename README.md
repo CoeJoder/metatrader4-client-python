@@ -6,7 +6,7 @@ A Python 3 client and API for the [MetaTrader 4 server](https://github.com/CoeJo
 from mt4client import MT4Client
 
 # create ZeroMQ sockets and connect to server
-mt4 = MT4Client(host="mt4terminal")
+mt4 = MT4Client(address="tcp://mt4server:28282")
 
 # query the MT4 terminal
 account = mt4.account()

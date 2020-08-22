@@ -101,7 +101,7 @@ class Symbol:
         resp = self._mt4._get_response(request={
             "action": "GET_SYMBOL_TICK",
             "symbol": self.name
-        }, timeout_message=f"Failed to get last tick for symbol: '{self.name}'")
+        })
         return SymbolTick(**resp)
 
     def market_info(self, prop: str) -> Union[int, float, str]:
@@ -118,7 +118,7 @@ class Symbol:
             "action": "GET_SYMBOL_MARKET_INFO",
             "symbol": self.name,
             "property": prop
-        }, timeout_message=f"Failed to get market info '{prop}' for symbol '{self.name}'")
+        })
 
     def ohlcv(self, timeframe: Union[str, StandardTimeframe, NonStandardTimeframe], limit: int = 100,
               timeout: int = 5000) -> List[OHLCV]:
@@ -138,7 +138,7 @@ class Symbol:
             "timeframe": period,
             "limit": limit,
             "timeout": timeout
-        }, timeout_message="Failed to get OHLCV data", default=[])
+        }, default=[])
         return [OHLCV(**bar) for bar in bars]
 
     def __repr__(self):
