@@ -17,7 +17,6 @@ class MT4Client:
         :param response_timeout_ms: The number of milliseconds to wait for a response to be received.
         :param verbose:             Whether to print trace messages.
         """
-        self._is_running = True
         self._verbose = verbose
 
         # create and configure REQ socket
@@ -32,11 +31,8 @@ class MT4Client:
         self._socket.connect(address)
 
     def shutdown(self):
-        """Close socket and destroy ZeroMQ context."""
+        """Close all sockets immediately and terminate the ZeroMQ context."""
         self._print_trace("Disconnecting...")
-        self._is_running = False
-
-        # close all sockets immediately and terminate context
         self._context.destroy(0)
 
     def account(self) -> Account:
