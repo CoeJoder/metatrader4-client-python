@@ -156,7 +156,7 @@ class Account:
 
     @property
     def margin_so_call(self) -> float:
-        """Margin call level. Depending on :attr:`margin_level`, this is expressed in percents or in
+        """Margin call level. Depending on :attr:`margin_so_mode`, this is expressed in percents or in
         the deposit currency.
         """
         return self._get_account_info_double(AccountInfoDouble.ACCOUNT_MARGIN_SO_CALL)
