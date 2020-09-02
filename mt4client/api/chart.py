@@ -52,15 +52,32 @@ class NonStandardTimeframe(Enum):
 
 
 class OHLCV(object):
-    """An OHLCV bar."""
+    """
+    An OHLCV bar.
+
+    References:
+        https://docs.mql4.com/series/copyrates
+        https://docs.mql4.com/constants/structures/mqlrates
+    """
 
     def __init__(self, open: int, high: int, low: int, close: int, tick_volume: int, time: int):
         self.open = open
+        """The period start time."""
+
         self.high = high
+        """The open price."""
+
         self.low = low
+        """The highest price of the period."""
+
         self.close = close
+        """The lowest price of the period."""
+
         self.tick_volume = tick_volume
+        """The close price."""
+
         self.time = time
+        """The tick volume."""
 
     def __repr__(self):
         return (f'{self.__class__.__name__}('
