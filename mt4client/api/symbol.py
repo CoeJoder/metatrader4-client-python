@@ -97,7 +97,14 @@ class Symbol:
         """The order freeze level in points."""
 
     def tick(self) -> SymbolTick:
-        """Get the latest market prices of this symbol."""
+        """
+        Get the latest market prices of this symbol.
+
+        References:
+            https://docs.mql4.com/constants/structures/mqltick
+
+        :return:    The latest symbol tick.
+        """
         resp = self._mt4._get_response(request={
             "action": "GET_SYMBOL_TICK",
             "symbol": self.name
