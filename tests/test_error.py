@@ -18,7 +18,7 @@ def test_retry_on_error(mt4: MT4Client, symbol: Symbol):
     except MT4Error as ex:
         if ex.error_code is MT4ErrorCode.ERR_INVALID_PRICE_PARAM:
             # resend the order with a valid price
-            new_price = symbol.tick().ask
+            new_price = symbol.tick.ask
             order = mt4.order_send(
                 symbol=symbol,
                 lots=symbol.min_lot,

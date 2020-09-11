@@ -4,7 +4,7 @@ from mt4client.api import Symbol, Order, OrderType
 
 def test_market_buy(mt4: MT4Client, symbol: Symbol) -> Order:
     # create a market order using relative stops
-    bid = symbol.tick().bid
+    bid = symbol.tick.bid
     points = 50
     order = mt4.order_send(
         symbol=symbol,
@@ -23,7 +23,7 @@ def test_market_buy(mt4: MT4Client, symbol: Symbol) -> Order:
 
 def test_market_sell(mt4: MT4Client, symbol: Symbol) -> Order:
     # create a market order using absolute stops
-    bid = symbol.tick().bid
+    bid = symbol.tick.bid
     points = 100
     sl = bid + points * symbol.point_size
     tp = bid - points * symbol.point_size
@@ -45,7 +45,7 @@ def test_market_sell(mt4: MT4Client, symbol: Symbol) -> Order:
 
 def test_limit_buy(mt4: MT4Client, symbol: Symbol) -> Order:
     # create a pending buy order with relative sl/tp
-    optimistic_buy_price = symbol.tick().ask / 2
+    optimistic_buy_price = symbol.tick.ask / 2
     slippage = 1
     sl_points = 100
     tp_points = 100
@@ -67,7 +67,7 @@ def test_limit_buy(mt4: MT4Client, symbol: Symbol) -> Order:
 
 def test_limit_sell(mt4: MT4Client, symbol: Symbol) -> Order:
     # create a pending sell order with no sl/tp
-    optimistic_sell_price = symbol.tick().bid * 2
+    optimistic_sell_price = symbol.tick.bid * 2
     price = optimistic_sell_price
     slippage = 1
     order = mt4.order_send(
@@ -93,7 +93,7 @@ def test_modify_open_order(mt4: MT4Client, symbol: Symbol):
     )
 
     # add sl/tp stops
-    bid = symbol.tick().bid
+    bid = symbol.tick.bid
     points = 200
     sl = bid - points * symbol.point_size
     tp = bid + points * symbol.point_size
@@ -107,7 +107,7 @@ def test_modify_open_order(mt4: MT4Client, symbol: Symbol):
 
 def test_modify_pending_order(mt4: MT4Client, symbol: Symbol):
     # create a pending order
-    optimistic_buy_price = symbol.tick().ask / 2
+    optimistic_buy_price = symbol.tick.ask / 2
     slippage = 1
     sl_points = 100
     tp_points = 100
@@ -155,7 +155,7 @@ def test_close_open_order(mt4: MT4Client, symbol: Symbol):
 
 def test_close_pending_order(mt4: MT4Client, symbol: Symbol):
     # create a pending order
-    optimistic_buy_price = symbol.tick().ask / 2
+    optimistic_buy_price = symbol.tick.ask / 2
     order = mt4.order_send(
         symbol=symbol,
         lots=symbol.min_lot,
@@ -176,7 +176,7 @@ def test_close_pending_order(mt4: MT4Client, symbol: Symbol):
 
 def test_delete_pending_order(mt4: MT4Client, symbol: Symbol):
     # create a pending order
-    optimistic_buy_price = symbol.tick().ask / 2
+    optimistic_buy_price = symbol.tick.ask / 2
     order = mt4.order_send(
         symbol=symbol,
         lots=symbol.min_lot,

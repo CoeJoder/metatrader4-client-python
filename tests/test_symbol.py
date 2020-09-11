@@ -1,6 +1,7 @@
 """Integration tests for the symbol-related functions."""
 
 import pytest
+from enum import Enum
 
 from mt4client.api import Symbol, StandardTimeframe
 from mt4client import MT4Client
@@ -12,17 +13,12 @@ def symbol(mt4: MT4Client, symbol_name: str) -> Symbol:
 
 
 def test_symbol_tick(symbol: Symbol):
-    tick = symbol.tick()
+    tick = symbol.tick
     assert isinstance(tick.time, int)
     assert isinstance(tick.bid, float)
     assert isinstance(tick.ask, float)
     assert isinstance(tick.last, float)
     assert isinstance(tick.volume, int)
-
-
-def test_fetch_market_info(symbol: Symbol):
-    spread = int(symbol.market_info("MODE_SPREAD"))
-    assert spread > 0
 
 
 def test_fetch_ohlcv(symbol: Symbol):
@@ -51,4 +47,3 @@ def test_indicator(mt4: MT4Client, symbol: Symbol):
     result = mt4.indicator(func, args)
     assert isinstance(result, float)
     print(f"{func}({str(args)[1:-1]}) = {result}")
-
