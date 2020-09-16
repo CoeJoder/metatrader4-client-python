@@ -22,7 +22,7 @@ print(f"\n{eur_usd.name} symbol:\n\t{eur_usd}")
 print(f"\n\tThe latest tick is:\n\t{eur_usd.tick}")
 print(f"\n\tThe latest of {len(bars)} bars is:\n\t{bars[-1]}")
 print(f"\nThere are {len(signals)} signals, one of which is:\n{first_signal}")
-print(f"\nResults for indicator iAC(EURUSD, 60, 1): {iac}")
+print(f"\nIndicator example:\niAC(EURUSD, 60, 1) = {iac}")
 ```
 ```commandline
 > I have 768.66 USD to trade against 173 symbols.
@@ -39,5 +39,6 @@ print(f"\nResults for indicator iAC(EURUSD, 60, 1): {iac}")
 > There are 1000 signals, one of which is:
 > Signal(author_login=Antonov-EA, broker=GBE Trading Technology Ltd, broker_server=GBEbrokers-Demo, name=FibonacciBreakout, currency=EUR, date_published=1386197632, date_started=1386194045, id=21457, leverage=200, pips=-49736, rating=789, subscribers=13, trades=9869, trade_mode=<AccountTradeMode.ACCOUNT_TRADE_MODE_CONTEST: 1>, balance=21522.68, equity=21506.7, gain=115.08, max_drawdown=57.01, price=0.0, roi=114.9)
 > 
-> Results for indicator iAC(EURUSD, 60, 1): -0.00173214
+> Indicator example:
+> iAC(EURUSD, 60, 1) = -0.00173214
 ```

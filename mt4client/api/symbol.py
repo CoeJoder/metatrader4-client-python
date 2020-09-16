@@ -233,43 +233,43 @@ class Symbol:
         https://docs.mql4.com/constants/environment_state/marketinfoconstants
     """
 
-    def __init__(self, mt4: MT4Client, name: str, point_size: float, digits: int, lot_size: float,
-                 tick_value: float, tick_size: float, min_lot: float, lot_step: float, max_lot: float,
-                 stop_level: float, freeze_level: float):
+    def __init__(self, mt4: MT4Client, name: str, point: float, digits: int, volume_min: float,
+                 volume_step: float, volume_max: float, trade_contract_size: float, trade_tick_value: float,
+                 trade_tick_size: float, trade_stops_level: int, trade_freeze_level: int):
         self._mt4 = mt4
 
         self.name = name
-        """The symbol name."""
+        """Symbol name."""
 
-        self.point_size = point_size
+        self.point = point
         """Point size in the quote currency."""
 
         self.digits = digits
-        """The digits after the decimal point."""
+        """Digits after the decimal point."""
 
-        self.lot_size = lot_size
-        """The lot size in the base currency."""
+        self.volume_min = volume_min
+        """Minimal volume for a deal."""
 
-        self.tick_value = tick_value
-        """The tick value in the deposit currency."""
+        self.volume_step = volume_step
+        """Minimal volume change step for deal execution."""
 
-        self.tick_size = tick_size
-        """The tick size in points."""
+        self.volume_max = volume_max
+        """Maximal volume for a deal."""
 
-        self.min_lot = min_lot
-        """The minimum permitted amount of a lot."""
+        self.trade_contract_size = trade_contract_size
+        """Trade contract size in the base currency."""
 
-        self.lot_step = lot_step
-        """The step for changing lots."""
+        self.trade_tick_value = trade_tick_value
+        """Tick value in the deposit currency."""
 
-        self.max_lot = max_lot
-        """The maximum permitted amount of a lot."""
+        self.trade_tick_size = trade_tick_size
+        """Tick size in points."""
 
-        self.stop_level = stop_level
-        """The stop level in points."""
+        self.trade_stops_level = trade_stops_level
+        """Stop level in points."""
 
-        self.freeze_level = freeze_level
-        """The order freeze level in points."""
+        self.trade_freeze_level = trade_freeze_level
+        """Order freeze level in points."""
 
     def ohlcv(self, timeframe: Union[str, StandardTimeframe, NonStandardTimeframe], limit: int = 100,
               timeout: int = 5000) -> List[OHLCV]:
@@ -389,22 +389,6 @@ class Symbol:
         return self._get_symbol_info_integer(SymbolInfoInteger.SYMBOL_EXPIRATION_TIME)
 
     @property
-    def trade_stops_level(self) -> int:
-        """Minimal indention in points from the current close price to place Stop orders.
-
-        :return:    `SymbolInfoInteger(:symbol, SYMBOL_TRADE_STOPS_LEVEL)`
-        """
-        return self._get_symbol_info_integer(SymbolInfoInteger.SYMBOL_TRADE_STOPS_LEVEL)
-
-    @property
-    def trade_freeze_level(self) -> int:
-        """Distance to freeze trade operations in points.
-
-        :return:    `SymbolInfoInteger(:symbol, SYMBOL_TRADE_FREEZE_LEVEL)`
-        """
-        return self._get_symbol_info_integer(SymbolInfoInteger.SYMBOL_TRADE_FREEZE_LEVEL)
-
-    @property
     def trade_exe_mode(self) -> SymbolTradeExecution:
         """Deal execution mode.
 
@@ -446,62 +430,6 @@ class Symbol:
         :return:    `SymbolInfoDouble(:symbol, SYMBOL_ASK)`
         """
         return self._get_symbol_info_double(SymbolInfoDouble.SYMBOL_ASK)
-
-    @property
-    def point(self) -> float:
-        """Symbol point value.
-
-        :return:    `SymbolInfoDouble(:symbol, SYMBOL_POINT)`
-        """
-        return self._get_symbol_info_double(SymbolInfoDouble.SYMBOL_POINT)
-
-    @property
-    def trade_tick_value(self) -> float:
-        """Tick value in the deposit currency.
-
-        :return:    `SymbolInfoDouble(:symbol, SYMBOL_TRADE_TICK_VALUE)`
-        """
-        return self._get_symbol_info_double(SymbolInfoDouble.SYMBOL_TRADE_TICK_VALUE)
-
-    @property
-    def trade_tick_size(self) -> float:
-        """Minimal price change.
-
-        :return:    `SymbolInfoDouble(:symbol, SYMBOL_TRADE_TICK_SIZE)`
-        """
-        return self._get_symbol_info_double(SymbolInfoDouble.SYMBOL_TRADE_TICK_SIZE)
-
-    @property
-    def trade_contract_size(self) -> float:
-        """Trade contract size.
-
-        :return:    `SymbolInfoDouble(:symbol, SYMBOL_TRADE_CONTRACT_SIZE)`
-        """
-        return self._get_symbol_info_double(SymbolInfoDouble.SYMBOL_TRADE_CONTRACT_SIZE)
-
-    @property
-    def volume_min(self) -> float:
-        """Minimal volume for deal.
-
-        :return:    `SymbolInfoDouble(:symbol, SYMBOL_VOLUME_MIN)`
-        """
-        return self._get_symbol_info_double(SymbolInfoDouble.SYMBOL_VOLUME_MIN)
-
-    @property
-    def volume_max(self) -> float:
-        """Maximum volume for deal.
-
-        :return:    `SymbolInfoDouble(:symbol, SYMBOL_VOLUME_MAX)`
-        """
-        return self._get_symbol_info_double(SymbolInfoDouble.SYMBOL_VOLUME_MAX)
-
-    @property
-    def volume_step(self) -> float:
-        """Minimal volume change step for deal execution.
-
-        :return:    `SymbolInfoDouble(:symbol, SYMBOL_VOLUME_STEP)`
-        """
-        return self._get_symbol_info_double(SymbolInfoDouble.SYMBOL_VOLUME_STEP)
 
     @property
     def swap_long(self) -> float:
@@ -555,12 +483,13 @@ class Symbol:
     def __repr__(self):
         return (f'{self.__class__.__name__}('
                 f'name={self.name}, '
-                f'point_size={self.point_size}, '
+                f'point_size={self.point}, '
                 f'digits={self.digits}, '
-                f'lot_size={self.lot_size}, '
-                f'tick_value={self.tick_value}, '
-                f'tick_size={self.tick_size}, '
-                f'min_lot={self.min_lot}, '
-                f'lot_step={self.lot_step}, '
-                f'max_lot={self.max_lot}, '
-                f'freeze_level={self.freeze_level})')
+                f'volume_min={self.volume_min}, '
+                f'volume_step={self.volume_step}, '
+                f'volume_max={self.volume_max}, '
+                f'trade_contract_size={self.trade_contract_size}, '
+                f'trade_tick_value={self.trade_tick_value}, '
+                f'trade_tick_size={self.trade_tick_size}, '
+                f'trade_stops_level={self.trade_stops_level}, '
+                f'trade_freeze_level={self.trade_freeze_level})')

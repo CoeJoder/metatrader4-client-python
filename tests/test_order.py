@@ -8,7 +8,7 @@ def test_market_buy(mt4: MT4Client, symbol: Symbol) -> Order:
     points = 50
     order = mt4.order_send(
         symbol=symbol,
-        lots=symbol.min_lot,
+        lots=symbol.volume_min,
         order_type=OrderType.OP_BUY,
         sl_points=points,
         tp_points=points)
@@ -25,11 +25,11 @@ def test_market_sell(mt4: MT4Client, symbol: Symbol) -> Order:
     # create a market order using absolute stops
     bid = symbol.tick.bid
     points = 100
-    sl = bid + points * symbol.point_size
-    tp = bid - points * symbol.point_size
+    sl = bid + points * symbol.point
+    tp = bid - points * symbol.point
     order = mt4.order_send(
         symbol=symbol,
-        lots=symbol.min_lot,
+        lots=symbol.volume_min,
         order_type=OrderType.OP_SELL,
         sl=sl,
         tp=tp
@@ -51,7 +51,7 @@ def test_limit_buy(mt4: MT4Client, symbol: Symbol) -> Order:
     tp_points = 100
     order = mt4.order_send(
         symbol=symbol,
-        lots=symbol.min_lot,
+        lots=symbol.volume_min,
         order_type=OrderType.OP_BUYLIMIT,
         price=optimistic_buy_price,
         slippage=slippage,
@@ -72,7 +72,7 @@ def test_limit_sell(mt4: MT4Client, symbol: Symbol) -> Order:
     slippage = 1
     order = mt4.order_send(
         symbol=symbol,
-        lots=symbol.min_lot,
+        lots=symbol.volume_min,
         order_type=OrderType.OP_SELLLIMIT,
         price=price,
         slippage=slippage
@@ -88,15 +88,15 @@ def test_modify_open_order(mt4: MT4Client, symbol: Symbol):
     # create a market order
     order = mt4.order_send(
         symbol=symbol,
-        lots=symbol.min_lot,
+        lots=symbol.volume_min,
         order_type=OrderType.OP_BUY
     )
 
     # add sl/tp stops
     bid = symbol.tick.bid
     points = 200
-    sl = bid - points * symbol.point_size
-    tp = bid + points * symbol.point_size
+    sl = bid - points * symbol.point
+    tp = bid + points * symbol.point
 
     # modify order
     order = mt4.order_modify(order=order, sl=sl, tp=tp)
@@ -113,7 +113,7 @@ def test_modify_pending_order(mt4: MT4Client, symbol: Symbol):
     tp_points = 100
     order = mt4.order_send(
         symbol=symbol,
-        lots=symbol.min_lot,
+        lots=symbol.volume_min,
         order_type=OrderType.OP_BUYLIMIT,
         price=optimistic_buy_price,
         slippage=slippage,
@@ -138,7 +138,7 @@ def test_close_open_order(mt4: MT4Client, symbol: Symbol):
     # create a market order
     order = mt4.order_send(
         symbol=symbol,
-        lots=symbol.min_lot,
+        lots=symbol.volume_min,
         order_type=OrderType.OP_BUY
     )
 
@@ -158,7 +158,7 @@ def test_close_pending_order(mt4: MT4Client, symbol: Symbol):
     optimistic_buy_price = symbol.tick.ask / 2
     order = mt4.order_send(
         symbol=symbol,
-        lots=symbol.min_lot,
+        lots=symbol.volume_min,
         order_type=OrderType.OP_BUYLIMIT,
         price=optimistic_buy_price
     )
@@ -179,7 +179,7 @@ def test_delete_pending_order(mt4: MT4Client, symbol: Symbol):
     optimistic_buy_price = symbol.tick.ask / 2
     order = mt4.order_send(
         symbol=symbol,
-        lots=symbol.min_lot,
+        lots=symbol.volume_min,
         order_type=OrderType.OP_BUYLIMIT,
         price=optimistic_buy_price
     )

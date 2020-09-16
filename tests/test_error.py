@@ -10,7 +10,7 @@ def test_retry_on_error(mt4: MT4Client, symbol: Symbol):
     try:
         order = mt4.order_send(
             symbol=symbol,
-            lots=symbol.min_lot,
+            lots=symbol.volume_min,
             order_type=OrderType.OP_BUYLIMIT,
             price=invalid_price
         )
@@ -21,7 +21,7 @@ def test_retry_on_error(mt4: MT4Client, symbol: Symbol):
             new_price = symbol.tick.ask
             order = mt4.order_send(
                 symbol=symbol,
-                lots=symbol.min_lot,
+                lots=symbol.volume_min,
                 order_type=OrderType.OP_BUYLIMIT,
                 price=new_price
             )
