@@ -382,7 +382,7 @@ class Symbol:
 
     @property
     def expiration_time(self) -> int:
-        """Date of the symbol trade end (usually used for futures)
+        """Date of the symbol trade end (usually used for futures).
 
         :return:    `SymbolInfoInteger(:symbol, SYMBOL_EXPIRATION_TIME)`
         """
