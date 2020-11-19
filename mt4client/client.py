@@ -268,7 +268,7 @@ class MT4Client:
         """
         self._get_response(request={
             "action": "DO_ORDER_DELETE",
-            "closeIfOpened": close_if_opened,
+            "close_if_opened": close_if_opened,
             "ticket": order.ticket if isinstance(order, Order) else order
         })
 
