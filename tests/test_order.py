@@ -153,27 +153,6 @@ def test_close_open_order(mt4: MT4Client, symbol: Symbol):
     print(f"Open order # {order.ticket} was closed.")
 
 
-def test_close_pending_order(mt4: MT4Client, symbol: Symbol):
-    # create a pending order
-    optimistic_buy_price = symbol.tick.ask / 2
-    order = mt4.order_send(
-        symbol=symbol,
-        lots=symbol.volume_min,
-        order_type=OrderType.OP_BUYLIMIT,
-        price=optimistic_buy_price
-    )
-
-    # assert that the order was created and is pending
-    assert order is not None
-    assert order.order_type.is_pending
-
-    # close the order
-    mt4.order_close(order)
-    search_results = [x for x in mt4.orders() if x.ticket == order.ticket]
-    assert len(search_results) == 0
-    print(f"Open order # {order.ticket} was closed.")
-
-
 def test_delete_pending_order(mt4: MT4Client, symbol: Symbol):
     # create a pending order
     optimistic_buy_price = symbol.tick.ask / 2
@@ -189,7 +168,7 @@ def test_delete_pending_order(mt4: MT4Client, symbol: Symbol):
     assert order.order_type.is_pending
 
     # delete the order
-    mt4.order_close(order)
+    mt4.order_delete(order)
     search_results = [x for x in mt4.orders() if x.ticket == order.ticket]
     assert len(search_results) == 0
     print(f"Pending order # {order.ticket} was deleted.")
