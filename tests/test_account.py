@@ -95,16 +95,16 @@ def test_account_margin_level(account: Account):
     print(f"Account margin_level: {val}")
 
 
-def test_account_margin_so_call(account: Account):
-    val = account.margin_so_call
+def test_account_margin_call_level(account: Account):
+    val = account.margin_call_level
     assert isinstance(val, float)
-    print(f"Account margin_so_call: {val}")
+    print(f"Account margin_call_level: {val}")
 
 
-def test_account_margin_so_so(account: Account):
-    val = account.margin_so_so
+def test_account_margin_stopout_level(account: Account):
+    val = account.margin_stopout_level
     assert isinstance(val, float)
-    print(f"Account margin_so_so: {val}")
+    print(f"Account margin_stopout_level: {val}")
 
 
 def test_account_name(account: Account):
